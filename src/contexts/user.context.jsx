@@ -1,18 +1,49 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useReducer, useEffect } from "react";
 
 import {
   onAuthStateChangedListener,
   createUserDocumentFromAuth,
-} from '../utils/firebase/firebase.utils';
+} from "../utils/firebase/firebase.utils";
 
 export const UserContext = createContext({
   setCurrentUser: () => null,
   currentUser: null,
 });
 
+export const USER_ACTION_TYPES ={
+  'SET_CURRENT_USER' : 'SET_CURRENT_USER'
+}
+
+const INITAL_STATE = {
+  currentUser : null
+}
+
+const userReducer = (state, action) => {
+  const {type, payload} = action;
+
+  switch (type) {
+    case USER_ACTION_TYPES.SET_CURRENT_USER:
+      return {
+        ...state,
+        currentUser: payload,
+      };
+    default:
+      throw  new Error(`Unhandle type ${type} in user reducer`)
+  }
+};
+
+
 export const UserProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const value = { currentUser, setCurrentUser };
+  // const [currentUser, setCurrentUser] = useState(null);
+  const  [{currentUser},dispatch] = useReducer(userReducer, INITAL_STATE);
+  console.log(currentUser);
+
+  const setCurrentUser = (user) =>{
+    dispatch({type : USER_ACTION_TYPES.SET_CURRENT_USER,payload : user})
+  }
+  
+   const value = { currentUser, setCurrentUser };
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChangedListener((user) => {
@@ -27,3 +58,5 @@ export const UserProvider = ({ children }) => {
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
+
+
