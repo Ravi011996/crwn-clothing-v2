@@ -6,7 +6,9 @@ import CategoryPreview from '../../components/category-preview/category-preview.
 
 const CategoriesPreview = () => {
   //const { categoriesMap } = useContext(CategoriesContext);
-  let categoriesMap = useSelector(selectCategoriesMap)
+  let categoriesMap = useSelector(selectCategoriesMap);
+  console.log("categoriesMap ::", categoriesMap);
+  
   return (
     <Fragment>
       {Object.keys(categoriesMap).map((title) => {
